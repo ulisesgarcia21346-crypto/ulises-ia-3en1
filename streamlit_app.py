@@ -5,14 +5,17 @@ st.set_page_config(page_title="Ulises IA 3 en 1", page_icon="🚀")
 st.title("🚀 Ulises IA 3 en 1")
 st.caption("De Teziutlán para el mundo - IA Real Activa")
 
+MODELO = "openai/gpt-oss-20b"
+
 try:
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-    st.success("✅ IA Conectada")
+    st.success(f"✅ IA Conectada - {MODELO}")
 except:
     st.error("Falta GROQ_API_KEY en Secrets")
+    st.stop()
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role":"system","content":"Eres Ulises IA, asistente de Teziutlán, útil y amigable. Respondes en español."}]
+    st.session_state.messages = [{"role":"system","content":"Eres Ulises IA, de Teziutlán, Puebla. Respondes en español, corto y útil."}]
 
 tab1, tab2, tab3 = st.tabs(["💬 Chat IA", "🧠 Tareas", "✨ Ideas"])
 
@@ -26,7 +29,7 @@ with tab1:
         with st.chat_message("user"):
             st.write(prompt)
         with st.chat_message("assistant"):
-            resp = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=st.session_state.messages)
+            resp = client.chat.completions.create(model=MODELO, messages=st.session_state.messages)
             ans = resp.choices[0].message.content
             st.write(ans)
         st.session_state.messages.append({"role":"assistant","content":ans})
@@ -35,12 +38,12 @@ with tab2:
     tarea = st.text_area("¿Qué tarea quieres planear?")
     if st.button("Crear Plan"):
         if tarea:
-            r = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":f"Plan paso a paso para: {tarea}"}])
+            r = client.chat.completions.create(model=MODELO, messages=[{"role":"user","content":f"Plan paso a paso para: {tarea}"}])
             st.success(r.choices[0].message.content)
 
 with tab3:
     tema = st.text_input("Tema para ideas")
     if st.button("Dame 5 ideas"):
         if tema:
-            r = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":f"5 ideas virales para: {tema}"}])
+            r = client.chat.completions.create(model=MODELO, messages=[{"role":"user","content":f"5 ideas virales para: {tema}"}])
             st.info(r.choices[0].message.content)
